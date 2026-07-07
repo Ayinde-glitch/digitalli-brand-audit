@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Branding Operations Audit — Digitalli</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f2f7f7;
+      --surface: #ffffff;
+      --border: #d0e4e2;
+      --border-strong: #3A8C82;
+      --text-primary: #1C2E2A;
+      --text-secondary: #3A5450;
+      --text-muted: #7A9E9A;
+      --accent: #3A8C82;
+      --accent-light: #5DCFCA;
+      --coral: #E8647A;
+      --radius: 8px;
+      --fragmented-bg: #fdeaed;
+      --fragmented-text: #b5203a;
+      --functional-bg: #e6f7f6;
+      --functional-text: #2a6e68;
+      --optimised-bg: #e0f8f7;
+      --optimised-text: #1C2E2A;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 3rem 1.25rem 4rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .logo {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 2.5rem;
+    }
+
+    .intro { margin-bottom: 2.5rem; }
+    .intro h1 { font-size: 26px; font-weight: 600; line-height: 1.3; margin-bottom: 0.75rem; }
+    .intro p { font-size: 15px; color: var(--text-secondary); line-height: 1.7; }
+
+    .progress-wrap { margin-bottom: 2rem; }
+    .progress-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .section-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+    .q-counter { font-size: 12px; color: var(--text-muted); }
+    .progress-bar-bg { height: 3px; background: var(--border); border-radius: 2px; }
+    .progress-bar-fill { height: 3px; background: var(--accent-light); border-radius: 2px; transition: width 0.35s ease; }
+
+    .question { font-size: 18px; font-weight: 500; line-height: 1.5; margin-bottom: 1.25rem; color: var(--text-primary); }
+
+    .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 2rem; }
+    .option {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 13px 16px;
+      font-size: 15px;
+      color: var(--text-primary);
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.15s, background 0.15s;
+      line-height: 1.4;
+    }
+    .option:hover { border-color: var(--border-strong); }
+    .option.selected { border: 1.5px solid var(--accent); background: #edf7f6; }
+
+    .nav { display: flex; justify-content: space-between; align-items: center; }
+    .btn {
+      border: 0.5px solid var(--border-strong);
+      border-radius: var(--radius);
+      padding: 11px 22px;
+      font-size: 14px;
+      font-weight: 500;
+      background: none;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn:hover { background: #f0ede8; }
+    .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .btn.primary { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
+    .btn.primary:hover { background: var(--accent); border-color: var(--accent); }
+
+    /* Gate screen */
+    .gate-wrap { padding: 0.5rem 0; }
+    .gate-wrap h2 { font-size: 20px; font-weight: 600; margin-bottom: 0.5rem; }
+    .gate-wrap p { font-size: 15px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.75rem; }
+    .field-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 1.5rem; }
+    .field-group input {
+      border: 0.5px solid var(--border-strong);
+      border-radius: var(--radius);
+      padding: 13px 16px;
+      font-size: 15px;
+      color: var(--text-primary);
+      background: var(--surface);
+      outline: none;
+      width: 100%;
+      transition: border-color 0.15s;
+    }
+    .field-group input:focus { border-color: var(--accent); }
+    .field-group input::placeholder { color: var(--text-muted); }
+    .btn-full { width: 100%; padding: 14px; font-size: 15px; }
+    .skip-link { display: block; text-align: center; margin-top: 1rem; font-size: 13px; color: var(--text-muted); cursor: pointer; text-decoration: underline; }
+
+    /* Result screen */
+    .result-wrap { text-align: center; padding: 0.5rem 0; }
+    .tier-badge {
+      display: inline-block;
+      padding: 5px 16px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
+    .tier-score { font-size: 58px; font-weight: 600; line-height: 1; margin-bottom: 0.35rem; }
+    .tier-title { font-size: 22px; font-weight: 600; margin-bottom: 1rem; }
+    .tier-desc { font-size: 15px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 2rem; max-width: 460px; margin-left: auto; margin-right: auto; }
+
+    .breakdown-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 2rem; text-align: left; }
+    .breakdown-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 16px 18px; }
+    .breakdown-card-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+    .breakdown-card-score { font-size: 22px; font-weight: 600; display: inline-block; margin-right: 10px; }
+    .breakdown-card-tier { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 10px; border-radius: 100px; vertical-align: middle; margin-bottom: 10px; }
+    .breakdown-card-tier.fragmented { background: var(--fragmented-bg); color: var(--fragmented-text); }
+    .breakdown-card-tier.functional { background: var(--functional-bg); color: var(--functional-text); }
+    .breakdown-card-tier.optimised { background: var(--optimised-bg); color: var(--optimised-text); }
+    .breakdown-card-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.65; }
+    .callout-block { background: #edf7f6; border-left: 3px solid var(--coral); border-radius: 0 var(--radius) var(--radius) 0; padding: 14px 18px; margin-bottom: 1.5rem; font-size: 14px; font-weight: 500; color: var(--text-primary); text-align: left; line-height: 1.6; }
+
+    .cta-block { background: var(--text-primary); color: #fff; border-radius: 12px; padding: 2rem 1.75rem; margin-bottom: 1.5rem; text-align: left; }
+    .cta-block h3 { font-size: 17px; font-weight: 600; margin-bottom: 0.5rem; }
+    .cta-block p { font-size: 14px; opacity: 0.75; line-height: 1.6; margin-bottom: 1.25rem; }
+    .cta-block a {
+      display: inline-block;
+      background: var(--coral);
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 11px 22px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .cta-block a:hover { opacity: 0.85; }
+
+    .restart { font-size: 13px; color: var(--text-muted); cursor: pointer; text-decoration: underline; }
+
+    .fragmented .tier-badge { background: var(--fragmented-bg); color: var(--fragmented-text); }
+    .functional .tier-badge { background: var(--functional-bg); color: var(--functional-text); }
+    .optimised .tier-badge { background: var(--optimised-bg); color: var(--optimised-text); }
+
+    @media (max-width: 480px) {
+      body { padding: 2rem 1rem 3rem; }
+      .intro h1 { font-size: 22px; }
+      .question { font-size: 16px; }
+      .breakdown { grid-template-columns: repeat(2, 1fr); }
+      .tier-score { font-size: 48px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="logo"><img src="logo.png" alt="Digitalli" style="height: 36px; width: auto;" /></div>
+
+  <!-- Intro screen -->
+  <div id="intro-screen">
+    <div class="intro">
+      <h1>The Branding Operations Audit</h1>
+      <p>12 questions. 4 minutes. Find out where your merch operations are costing you and what to fix first.</p>
+    </div>
+    <button class="btn primary" style="font-size:15px; padding:13px 28px;" onclick="startQuiz()">Start the audit</button>
+  </div>
+
+  <!-- Quiz screen -->
+  <div id="quiz-screen" style="display:none">
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span class="section-label" id="section-label"></span>
+        <span class="q-counter" id="q-counter"></span>
+      </div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+    <div class="question" id="question-text"></div>
+    <div class="options" id="options-container"></div>
+    <div class="nav">
+      <button class="btn" id="back-btn" onclick="goBack()" disabled>Back</button>
+      <button class="btn primary" id="next-btn" onclick="goNext()" disabled>Next</button>
+    </div>
+  </div>
+
+  <!-- Gate screen -->
+  <div id="gate-screen" style="display:none">
+    <div class="gate-wrap">
+      <h2>Your results are ready</h2>
+      <p>Enter your details to see your score, tier breakdown, and what to fix first.</p>
+      <div class="field-group">
+        <input type="text" id="gate-name" placeholder="Your name" />
+        <input type="email" id="gate-email" placeholder="Work email" />
+        <input type="text" id="gate-company" placeholder="Company name" />
+      </div>
+      <button class="btn primary btn-full" onclick="submitGate()">See my results</button>
+    </div>
+  </div>
+
+  <!-- Result screen -->
+  <div id="result-screen" style="display:none"></div>
+</div>
+
+<script>
+  const questions = [
+    { section: "Vendor setup", q: "How many vendors are you using for branded merch right now?", opts: ["Just one", "Two or three", "Four or more", "No fixed vendors. We source ad hoc"] },
+    { section: "Vendor setup", q: "Do you have a single point of contact who manages all merch production?", opts: ["Yes, a dedicated person", "Informally. Someone handles it part-time", "No. It's split across the team", "It changes depending on the order"] },
+    { section: "Vendor setup", q: "How often do orders come back with quality issues?", opts: ["Rarely or never", "Occasionally, once or twice a year", "Fairly often", "Almost every order has something wrong"] },
+    { section: "Inventory & visibility", q: "At any given time, do you know your current branded merch stock levels?", opts: ["Yes, tracked in real time", "Roughly. We check manually", "Not really. We find out when we run low", "No visibility at all"] },
+    { section: "Inventory & visibility", q: "How do you track what's been dispatched versus what's still in storage?", opts: ["Dedicated system or tool", "Spreadsheet we update regularly", "Loose notes or verbal updates", "We don't track this"] },
+    { section: "Inventory & visibility", q: "Have you ever run out of branded merch in the middle of a campaign or event?", opts: ["Never", "Once or twice", "A few times", "This happens regularly"] },
+    { section: "Fulfilment & timelines", q: "What's your typical lead time from placing a merch order to delivery?", opts: ["Under 1 week", "1 to 2 weeks", "2 to 4 weeks", "Over a month or unpredictable"] },
+    { section: "Fulfilment & timelines", q: "How often do your merch timelines slip from what was promised?", opts: ["Rarely", "Occasionally", "Often", "Almost always"] },
+    { section: "Fulfilment & timelines", q: "Do you have a reliable dispatch process for sending merch to multiple locations nationwide?", opts: ["Yes, structured and documented", "Sort of. We improvise each time", "No. Every delivery is a new problem", "We don't do nationwide dispatch"] },
+    { section: "Cost & control", q: "Do you know your true cost-per-unit across all your merch vendors?", opts: ["Yes, tracked and reviewed", "Approximately", "Not really", "No idea"] },
+    { section: "Cost & control", q: "Have you ever had to emergency-source branded merch at a premium to meet a deadline?", opts: ["Never", "Once or twice", "A few times", "This is basically the norm"] },
+    { section: "Cost & control", q: "Who owns merch operations in your organisation?", opts: ["A dedicated ops person", "A marketing or brand team member doing it alongside other work", "Whoever has time", "No one owns it clearly"] }
+  ];
+
+  const scores = [0, 1, 2, 3];
+  const sections = [
+    { key: "vendor", label: "Vendor", qs: [0,1,2] },
+    { key: "inventory", label: "Inventory", qs: [3,4,5] },
+    { key: "fulfilment", label: "Fulfilment", qs: [6,7,8] },
+    { key: "cost", label: "Cost & ctrl", qs: [9,10,11] }
+  ];
+  let answers = new Array(questions.length).fill(null);
+  let current = 0;
+
+  function startQuiz() {
+    document.getElementById('intro-screen').style.display = 'none';
+    document.getElementById('quiz-screen').style.display = 'block';
+    render();
+  }
+
+  function render() {
+    const q = questions[current];
+    document.getElementById('section-label').textContent = q.section;
+    document.getElementById('q-counter').textContent = (current + 1) + ' of ' + questions.length;
+    document.getElementById('progress-fill').style.width = ((current / questions.length) * 100) + '%';
+    document.getElementById('question-text').textContent = q.q;
+    document.getElementById('back-btn').disabled = current === 0;
+    document.getElementById('next-btn').disabled = answers[current] === null;
+    document.getElementById('next-btn').textContent = current === questions.length - 1 ? 'See results' : 'Next';
+
+    const container = document.getElementById('options-container');
+    container.innerHTML = '';
+    q.opts.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'option' + (answers[current] === i ? ' selected' : '');
+      btn.textContent = opt;
+      btn.onclick = () => { answers[current] = i; render(); };
+      container.appendChild(btn);
+    });
+  }
+
+  function goNext() {
+    if (current === questions.length - 1) {
+      document.getElementById('quiz-screen').style.display = 'none';
+      document.getElementById('gate-screen').style.display = 'block';
+      return;
+    }
+    current++;
+    render();
+  }
+
+  function goBack() {
+    if (current > 0) { current--; render(); }
+  }
+
+  async function submitGate() {
+    const name = document.getElementById('gate-name').value.trim();
+    const email = document.getElementById('gate-email').value.trim();
+    const company = document.getElementById('gate-company').value.trim();
+    if (!name) { document.getElementById('gate-name').focus(); document.getElementById('gate-name').style.borderColor = 'var(--coral)'; return; }
+    if (!email) { document.getElementById('gate-email').focus(); document.getElementById('gate-email').style.borderColor = 'var(--coral)'; return; }
+    if (!company) { document.getElementById('gate-company').focus(); document.getElementById('gate-company').style.borderColor = 'var(--coral)'; return; }
+    try {
+      await fetch('/api/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          email,
+          company,
+          score: getScore(),
+          tier: getTier(),
+          vendor: getCategoryScore({ qs: [0,1,2] }),
+          inventory: getCategoryScore({ qs: [3,4,5] }),
+          fulfilment: getCategoryScore({ qs: [6,7,8] }),
+          cost: getCategoryScore({ qs: [9,10,11] })
+        })
+      });
+    } catch (err) {
+      console.error('Submission error:', err);
+    }
+    showResult(name);
+  }
+
+  // Overall tier descriptions
+  const tierDescs = {
+    Fragmented: "There are real gaps in how your merch ops are running right now. Vendors are scattered, stock levels are a guessing game, timelines are unpredictable, and the true cost of it all is anyone's guess. Here's the thing though: the next big campaign won't wait for you to sort it out. It'll just expose everything that's broken, at full volume, in front of your clients. Every single gap here is fixable. But the longer you leave it, the more expensive the fix gets. Book a call and let's start with the most urgent one.",
+    Functional: "Things are moving, and that counts for something. But if you're honest, your ops are running on people, not process. Someone on your team is quietly absorbing work that a proper system should be doing. You're paying for that every month, just not on any invoice. Getting from here to Optimised doesn't take a full overhaul. It takes two or three deliberate fixes in the right places. Let's find yours.",
+    Optimised: "You're running better than most businesses at your stage, and that's worth saying out loud. But here's what the score won't tell you: what's working right now is probably working because of specific people, not because of a system that runs without them. The moment volume picks up or someone key steps away, you'll find out fast which parts were infrastructure and which parts were just habit. Don't wait for that moment to find out. Lock in what's working before it gets stress-tested."
+  };
+
+  // Category-level responses by tier
+  const categoryDescs = {
+    vendor: {
+      Fragmented: "This is the first thing to fix, full stop. When you have multiple suppliers and no one person owns the relationship, every order is basically a fresh start. Quality is inconsistent, timelines shift, and when something goes wrong there's no clear person to call. Pick fewer vendors, assign ownership, and build a brief template you use every time. That alone will change how production feels.",
+      Functional: "Your vendor setup is holding together but it's not tight. Quality control is inconsistent and accountability gets blurry depending on who placed the order. The fix isn't complicated: one point of contact per product category, a standard brief, and a QC checklist on every order. Small discipline, big difference.",
+      Optimised: "Your vendor relationships are working well right now. The real question is whether they'd survive a personnel change. If the person managing these relationships left tomorrow, would quality hold? Would timelines hold? If the answer is 'probably not,' the relationship lives in someone's head, not in your business. Document the brief, the QC checklist, and who calls who when things go sideways. That's what makes it a system."
+    },
+    inventory: {
+      Fragmented: "Right now, you're making merch decisions without the information you need. Running out mid-campaign, over-ordering, scrambling to source at a premium — those aren't vendor problems or fulfilment problems. They're inventory problems. Get a single place where stock levels live and someone responsible for keeping it accurate. Everything else improves once you can see what you actually have.",
+      Functional: "You know roughly what's in stock, but 'roughly' is doing a lot of heavy lifting. Manual tracking means you're always a little behind, and you're probably finding out about shortages right when it hurts. A simple stock system with reorder alerts would cut most of that scramble. It doesn't need to be fancy. It needs to be reliable.",
+      Optimised: "Your inventory visibility is genuinely strong. But here's the thing about tracking that depends on someone updating it manually: it's only as good as the last time they logged in. One distracted week and the numbers drift. One bad quarter and you're staring at a stockout you didn't see coming. The next move is automating the update so the data stays accurate without anyone having to remember to maintain it."
+    },
+    fulfilment: {
+      Fragmented: "This is where your clients feel the pain most directly. Long lead times, timelines that slip, deliveries that are improvised every single time. It erodes trust faster than almost anything else. A documented dispatch process with clear steps and handoffs isn't a nice-to-have at this stage. It's the baseline. Write it down once and every order gets better immediately.",
+      Functional: "Your fulfilment process works often enough that it doesn't feel urgent to fix. That's exactly why it stays broken. When timelines slip, someone compensates. When a delivery falls through, someone catches it. But that someone is burning time and goodwill on problems a proper process would prevent. Write a one-page SOP. You'll be surprised how much variation disappears.",
+      Optimised: "Reliable fulfilment is genuinely hard to build and you've done it. Here's the honest next question though: can it handle 3x your current volume? Because what works at today's throughput often becomes the bottleneck the moment you land a bigger client or run a high-demand campaign. Build for that pressure now, while there's room to think, not when you're already in the middle of it."
+    },
+    cost: {
+      Fragmented: "You don't actually know what your merch costs. Not the real number. Invoice totals aren't the full picture once you factor in emergency sourcing, production waste, and the staff hours spent chasing suppliers and fixing problems. Pull your last six months of merch spend, calculate the true cost per unit, and you'll see where the money is going. That number usually motivates pretty fast action.",
+      Functional: "You have a working sense of costs but it's not precise enough to make confident decisions. The gap is almost always emergency sourcing and untracked staff time. Those two things rarely show up on a budget line but they add up fast. A simple cost tracker per order changes the picture quickly and gives you the data to negotiate better and plan smarter.",
+      Optimised: "Your cost awareness puts you ahead of most. But knowing your numbers now doesn't mean they'll stay clean as you scale. The risk is cost creep: small inefficiencies that barely register at current volume become structural at scale. That occasional emergency sourcing becomes a regular line item. Manual coordination that takes two hours now takes twelve. Without something actively flagging the drift, you won't notice until the margin is already gone."
+    }
+  };
+
+  // Weakest category callout
+  const weakestCallout = {
+    vendor: "Your vendor setup is where things are most exposed right now. That's the one to tackle first.",
+    inventory: "Inventory visibility is your biggest blind spot. You can't manage stock you can't see.",
+    fulfilment: "Fulfilment is your weakest area and it's the one your clients notice first. Worth fixing quickly.",
+    cost: "Cost and control is the quiet leak in your ops. The money is going somewhere you're not tracking yet."
+  };
+
+  function getCategoryScore(s) {
+    const sMax = s.qs.length * 3;
+    const sScore = s.qs.reduce((sum, qi) => sum + (answers[qi] !== null ? scores[answers[qi]] : 0), 0);
+    return Math.round((sScore / sMax) * 100);
+  }
+
+  function getCategoryTier(pct) {
+    if (pct >= 67) return 'Optimised';
+    if (pct >= 34) return 'Functional';
+    return 'Fragmented';
+  }
+
+  function getScore() {
+    const total = answers.reduce((s, a) => s + (a !== null ? scores[a] : 0), 0);
+    return Math.round((total / (questions.length * 3)) * 100);
+  }
+
+  function getTier() {
+    const pct = getScore();
+    if (pct >= 67) return 'Optimised';
+    if (pct >= 34) return 'Functional';
+    return 'Fragmented';
+  }
+
+  function getWeakest() {
+    let weakKey = null, weakPct = 101;
+    sections.forEach(s => {
+      const pct = getCategoryScore(s);
+      if (pct < weakPct) { weakPct = pct; weakKey = s.key; }
+    });
+    return weakKey;
+  }
+
+  function showResult(name) {
+    document.getElementById('gate-screen').style.display = 'none';
+    const pct = getScore();
+    const tier = getTier();
+    const tierClass = tier.toLowerCase();
+    const weakest = getWeakest();
+
+    const breakdownHTML = sections.map(s => {
+      const sPct = getCategoryScore(s);
+      const sTier = getCategoryTier(sPct);
+      const catDesc = categoryDescs[s.key][sTier];
+      return `
+        <div class="breakdown-card">
+          <div class="breakdown-card-label">${s.label}</div>
+          <div class="breakdown-card-score">${sPct}%</div>
+          <div class="breakdown-card-tier ${sTier.toLowerCase()}">${sTier}</div>
+          <div class="breakdown-card-desc">${catDesc}</div>
+        </div>`;
+    }).join('');
+
+    const greeting = name ? `<p style="font-size:14px;color:var(--text-muted);margin-bottom:1rem;">Here's your breakdown, ${name}.</p>` : '';
+    const callout = weakest ? `<div class="callout-block">${weakestCallout[weakest]}</div>` : '';
+
+    document.getElementById('result-screen').innerHTML = `
+      <div class="result-wrap ${tierClass}">
+        ${greeting}
+        <div class="tier-badge">${tier}</div>
+        <div class="tier-score">${pct}%</div>
+        <div class="tier-title">Your merch ops score</div>
+        <div class="tier-desc">${tierDescs[tier]}</div>
+        ${callout}
+        <div class="breakdown-list">${breakdownHTML}</div>
+        <div class="cta-block">
+          <h3>Let's fix this together</h3>
+          <p>30 minutes with the Digitalli team. Bring your results. We'll tell you exactly what to tackle first and what it looks like when it's done properly.</p>
+          <a href="https://www.digitallikraft.com/contact" target="_blank">Book a free ops review →</a>
+        </div>
+        <span class="restart" onclick="restart()">Retake the audit</span>
+      </div>
+    `;
+    document.getElementById('result-screen').style.display = 'block';
+  }
+
+  function restart() {
+    answers = new Array(questions.length).fill(null);
+    current = 0;
+    document.getElementById('result-screen').style.display = 'none';
+    document.getElementById('intro-screen').style.display = 'block';
+  }
+</script>
+</body>
+</html>
