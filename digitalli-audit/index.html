@@ -186,7 +186,7 @@
     <div class="intro">
       <h1>The Branding Operations Audit</h1>
       <p style="font-size:15px;color:var(--text-secondary);line-height:1.75;margin-bottom:1rem;">You're growing. Orders are coming in, campaigns are running, and your brand is showing up in more places. But behind the scenes, someone on your team is chasing vendors, guessing stock levels, and hoping the next delivery shows up on time. Sound familiar? That's not a people problem. That's an operations problem.</p>
-      <p style="font-size:15px;color:var(--text-secondary);line-height:1.75;margin-bottom:1rem;">This audit looks at the four areas where branded merch ops tend to break down: how your vendors are set up, whether you actually know what's in stock, how reliable your fulfilment is, and whether your costs are under control. Twelve questions. Four minutes. No fluff.</p>
+      <p style="font-size:15px;color:var(--text-secondary);line-height:1.75;margin-bottom:1rem;">This audit looks at the four areas where branded merch ops tend to break down: how your vendors are set up, whether you actually know what's in stock, how reliable your fulfilment is, and whether your costs are under control. Fifteen questions. Five minutes. No fluff.</p>
       <p style="font-size:15px;color:var(--text-secondary);line-height:1.75;margin-bottom:2rem;">By the end, you'll have a real score, a clear tier, and a specific action plan built around your results. Not generic advice. Not a sales pitch. Just an honest picture of where your ops stand and exactly what to fix first. Take the audit and leave with something you can actually use today.</p>
     </div>
     <button class="btn primary" style="font-size:15px; padding:13px 28px;" onclick="startQuiz()">Start the audit</button>
@@ -229,26 +229,40 @@
 
 <script>
   const questions = [
-    { section: "Vendor setup", q: "How many vendors are you using for branded merch right now?", opts: ["Just one", "Two or three", "Four or more", "No fixed vendors. We source ad hoc"] },
-    { section: "Vendor setup", q: "Do you have a single point of contact who manages all merch production?", opts: ["Yes, a dedicated person", "Informally. Someone handles it part-time", "No. It's split across the team", "It changes depending on the order"] },
+    // Profiling (unscored)
+    { section: "About you", q: "Which industry best describes your business?", opts: ["Financial Services", "FMCG / Consumer Goods", "Technology", "Healthcare / Pharma", "Professional Services", "Other"], unscored: true },
+    { section: "About you", q: "How big is your team?", opts: ["1 to 10 people", "11 to 50 people", "51 to 200 people", "200 and above"], unscored: true },
+
+    // Vendor setup (scored) — index 2,3,4
+    { section: "Vendor setup", q: "How many vendors are you using for merch production right now?", opts: ["Just one", "Two or three", "Four or more", "No fixed vendors. We source ad hoc"] },
+    { section: "Vendor setup", q: "Do you have an employee who manages all merch production?", opts: ["Yes, a dedicated person", "Informally. Someone handles it part-time", "No. It's split across the team", "It changes depending on the order"] },
     { section: "Vendor setup", q: "How often do orders come back with quality issues?", opts: ["Rarely or never", "Occasionally, once or twice a year", "Fairly often", "Almost every order has something wrong"] },
-    { section: "Inventory & visibility", q: "At any given time, do you know your current branded merch stock levels?", opts: ["Yes, tracked in real time", "Roughly. We check manually", "Not really. We find out when we run low", "No visibility at all"] },
+
+    // Inventory & visibility (scored) — index 5,6,7
+    { section: "Inventory & visibility", q: "At any given time, do you know your current merch stock levels?", opts: ["Yes, tracked in real time", "Roughly. We check manually", "Not really. We find out when we run low", "No visibility at all"] },
     { section: "Inventory & visibility", q: "How do you track what's been dispatched versus what's still in storage?", opts: ["Dedicated system or tool", "Spreadsheet we update regularly", "Loose notes or verbal updates", "We don't track this"] },
     { section: "Inventory & visibility", q: "Have you ever run out of branded merch in the middle of a campaign or event?", opts: ["Never", "Once or twice", "A few times", "This happens regularly"] },
+
+    // Fulfilment & timelines (scored) — index 8,9,10
     { section: "Fulfilment & timelines", q: "What's your typical lead time from placing a merch order to delivery?", opts: ["Under 1 week", "1 to 2 weeks", "2 to 4 weeks", "Over a month or unpredictable"] },
     { section: "Fulfilment & timelines", q: "How often do your merch timelines slip from what was promised?", opts: ["Rarely", "Occasionally", "Often", "Almost always"] },
     { section: "Fulfilment & timelines", q: "Do you have a reliable dispatch process for sending merch to multiple locations nationwide?", opts: ["Yes, structured and documented", "Sort of. We improvise each time", "No. Every delivery is a new problem", "We don't do nationwide dispatch"] },
+
+    // Cost & control (scored) — index 11,12,13
     { section: "Cost & control", q: "Do you know your true cost-per-unit across all your merch vendors?", opts: ["Yes, tracked and reviewed", "Approximately", "Not really", "No idea"] },
-    { section: "Cost & control", q: "Have you ever had to emergency-source branded merch at a premium to meet a deadline?", opts: ["Never", "Once or twice", "A few times", "This is basically the norm"] },
-    { section: "Cost & control", q: "Who owns merch operations in your organisation?", opts: ["A dedicated ops person", "A marketing or brand team member doing it alongside other work", "Whoever has time", "No one owns it clearly"] }
+    { section: "Cost & control", q: "Have you ever had to pay extra to meet a deadline for an emergency-sourced brand merch?", opts: ["Never", "Once or twice", "A few times", "This is basically the norm"] },
+    { section: "Cost & control", q: "Who owns merch operations in your organisation?", opts: ["A dedicated ops person", "A marketing or brand team member doing it alongside other work", "Whoever has time", "No one owns it clearly"] },
+
+    // Open-ended (unscored) — index 14
+    { section: "Your biggest challenge", q: "In your own words, what is the biggest merch operations challenge your business is dealing with right now?", openEnded: true, unscored: true }
   ];
 
   const scores = [0, 1, 2, 3];
   const sections = [
-    { key: "vendor", label: "Vendor", qs: [0,1,2] },
-    { key: "inventory", label: "Inventory", qs: [3,4,5] },
-    { key: "fulfilment", label: "Fulfilment", qs: [6,7,8] },
-    { key: "cost", label: "Cost & ctrl", qs: [9,10,11] }
+    { key: "vendor", label: "Vendor", qs: [2,3,4] },
+    { key: "inventory", label: "Inventory", qs: [5,6,7] },
+    { key: "fulfilment", label: "Fulfilment", qs: [8,9,10] },
+    { key: "cost", label: "Cost & ctrl", qs: [11,12,13] }
   ];
   let answers = new Array(questions.length).fill(null);
   let current = 0;
@@ -266,18 +280,35 @@
     document.getElementById('progress-fill').style.width = ((current / questions.length) * 100) + '%';
     document.getElementById('question-text').textContent = q.q;
     document.getElementById('back-btn').disabled = current === 0;
-    document.getElementById('next-btn').disabled = answers[current] === null;
     document.getElementById('next-btn').textContent = current === questions.length - 1 ? 'See results' : 'Next';
 
     const container = document.getElementById('options-container');
     container.innerHTML = '';
-    q.opts.forEach((opt, i) => {
-      const btn = document.createElement('button');
-      btn.className = 'option' + (answers[current] === i ? ' selected' : '');
-      btn.textContent = opt;
-      btn.onclick = () => { answers[current] = i; render(); };
-      container.appendChild(btn);
-    });
+
+    if (q.openEnded) {
+      const ta = document.createElement('textarea');
+      ta.id = 'open-ended-answer';
+      ta.placeholder = 'Type your answer here...';
+      ta.style.cssText = 'width:100%;min-height:120px;padding:13px 16px;font-size:15px;font-family:inherit;border:0.5px solid var(--border-strong);border-radius:var(--radius);background:var(--surface);color:var(--text-primary);resize:vertical;outline:none;line-height:1.6;box-sizing:border-box;';
+      ta.value = answers[current] || '';
+      ta.oninput = () => { answers[current] = ta.value; document.getElementById('next-btn').disabled = false; };
+      container.appendChild(ta);
+      const skip = document.createElement('span');
+      skip.textContent = 'Skip this question';
+      skip.style.cssText = 'font-size:13px;color:var(--text-muted);cursor:pointer;text-decoration:underline;display:block;margin-top:10px;';
+      skip.onclick = () => { answers[current] = ''; document.getElementById('next-btn').disabled = false; };
+      container.appendChild(skip);
+      document.getElementById('next-btn').disabled = !answers[current];
+    } else {
+      q.opts.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option' + (answers[current] === i ? ' selected' : '');
+        btn.textContent = opt;
+        btn.onclick = () => { answers[current] = i; document.getElementById('next-btn').disabled = false; render(); };
+        container.appendChild(btn);
+      });
+      document.getElementById('next-btn').disabled = answers[current] === null;
+    }
   }
 
   function goNext() {
@@ -311,10 +342,17 @@
           company,
           score: getScore(),
           tier: getTier(),
-          vendor: getCategoryScore({ qs: [0,1,2] }),
-          inventory: getCategoryScore({ qs: [3,4,5] }),
-          fulfilment: getCategoryScore({ qs: [6,7,8] }),
-          cost: getCategoryScore({ qs: [9,10,11] })
+          vendor: getCategoryScore({ qs: [2,3,4] }),
+          inventory: getCategoryScore({ qs: [5,6,7] }),
+          fulfilment: getCategoryScore({ qs: [8,9,10] }),
+          cost: getCategoryScore({ qs: [11,12,13] }),
+          vendor_tier: getCategoryTier(getCategoryScore({ qs: [2,3,4] })),
+          inventory_tier: getCategoryTier(getCategoryScore({ qs: [5,6,7] })),
+          fulfilment_tier: getCategoryTier(getCategoryScore({ qs: [8,9,10] })),
+          cost_tier: getCategoryTier(getCategoryScore({ qs: [11,12,13] })),
+          industry: questions[0].opts[answers[0]] || '',
+          team_size: questions[1].opts[answers[1]] || '',
+          merch_challenge: answers[14] || ''
         })
       });
     } catch (err) {
@@ -365,18 +403,23 @@
   function getCategoryScore(s) {
     const sMax = s.qs.length * 3;
     const sScore = s.qs.reduce((sum, qi) => sum + (answers[qi] !== null ? scores[answers[qi]] : 0), 0);
-    return Math.round((sScore / sMax) * 100);
+    // Invert so high % = good performance
+    return Math.round(((sMax - sScore) / sMax) * 100);
   }
 
   function getCategoryTier(pct) {
+    // Based on inverted score: high % = good
     if (pct >= 67) return 'Optimised';
     if (pct >= 34) return 'Functional';
     return 'Fragmented';
   }
 
   function getScore() {
-    const total = answers.reduce((s, a) => s + (a !== null ? scores[a] : 0), 0);
-    return Math.round((total / (questions.length * 3)) * 100);
+    // Only score questions at index 2-13 (skip unscored profiling + open-ended)
+    const scoredIndexes = [2,3,4,5,6,7,8,9,10,11,12,13];
+    const total = scoredIndexes.reduce((s, i) => s + (answers[i] !== null ? scores[answers[i]] : 0), 0);
+    const max = scoredIndexes.length * 3;
+    return Math.round(((max - total) / max) * 100);
   }
 
   function getTier() {
