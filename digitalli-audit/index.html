@@ -162,6 +162,16 @@
     }
     .cta-block a:hover { opacity: 0.85; }
 
+    .share-block { background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; }
+    .share-title { font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+    .share-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.6; }
+    .share-buttons { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+    .share-btn { padding: 10px 16px; border-radius: var(--radius); font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: opacity 0.15s; }
+    .share-btn:hover { opacity: 0.85; }
+    .share-li { background: #0A66C2; color: #fff; }
+    .share-wa { background: #25D366; color: #fff; }
+    .share-tw { background: #1C2E2A; color: #fff; }
+    .share-copy { background: var(--surface-1); color: var(--text-primary); border: 0.5px solid var(--border-strong); }
     .restart { font-size: 13px; color: var(--text-muted); cursor: pointer; text-decoration: underline; }
 
     .fragmented .tier-badge { background: var(--fragmented-bg); color: var(--fragmented-text); }
@@ -475,10 +485,45 @@
           <p>30 minutes with the Digitalli team. Bring your results. We'll tell you exactly what to tackle first and what it looks like when it's done properly.</p>
           <a href="https://www.digitallikraft.com/contact" target="_blank">Book a free ops review →</a>
         </div>
+        <div class="share-block">
+          <p class="share-title">Know someone who should take this audit?</p>
+          <p class="share-sub">Share your result and challenge them to find out where their ops really stand.</p>
+          <div class="share-buttons">
+            <button class="share-btn share-li" onclick="shareLinkedIn(${pct}, '${tier}')">LinkedIn</button>
+            <button class="share-btn share-wa" onclick="shareWhatsApp(${pct}, '${tier}')">WhatsApp</button>
+            <button class="share-btn share-tw" onclick="shareTwitter(${pct}, '${tier}')">Twitter / X</button>
+            <button class="share-btn share-copy" id="copy-btn" onclick="copyLink(${pct}, '${tier}')">Copy message</button>
+          </div>
+        </div>
         <span class="restart" onclick="restart()">Retake the audit</span>
       </div>
     `;
     document.getElementById('result-screen').style.display = 'block';
+  }
+
+  function shareLinkedIn(pct, tier) {
+    const text = `I just audited my brand operations with the Digitalli Branding Operations Audit and scored ${pct}% — ${tier} tier.\n\nIf you manage branded merch for a growing business, you should take this too. It took me 5 minutes and told me exactly where my ops are breaking down.\n\nFree audit here: https://audit.digitallikraft.com`;
+    const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent('https://audit.digitallikraft.com')}&summary=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+  }
+
+  function shareWhatsApp(pct, tier) {
+    const text = `I just audited my brand operations and scored ${pct}% on the Digitalli Branding Operations Audit. I landed in the ${tier} tier.\n\nI think you should take it too — took me 5 minutes and the results were uncomfortably accurate 😅\n\nHere is the link: https://audit.digitallikraft.com`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  }
+
+  function shareTwitter(pct, tier) {
+    const text = `I just took the Branding Operations Audit by Digitalli and scored ${pct}% — ${tier} tier.\n\nIf your business has a Charles, you need to take this.\n\naudit.digitallikraft.com`;
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
+  }
+
+  function copyLink(pct, tier) {
+    const text = `I just audited my brand operations and scored ${pct}% on the Digitalli Branding Operations Audit — ${tier} tier. I think you should take it too. Free and takes 5 minutes: https://audit.digitallikraft.com`;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copy-btn');
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = 'Copy message'; }, 2500);
+    });
   }
 
   function restart() {
